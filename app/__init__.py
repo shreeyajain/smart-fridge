@@ -1,9 +1,7 @@
-from flask import Flask, abort, render_template, request, session, redirect
-from werkzeug.wrappers import UserAgentMixin
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import LoginManager, UserMixin, current_user, UserMixin, login_user, logout_user, login_required
-from datetime import timedelta
+from flask_login import LoginManager
 
 app = Flask(__name__)
 app.config.from_object('config')
