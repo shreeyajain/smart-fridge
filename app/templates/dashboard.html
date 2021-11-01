@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Dashboard Page</h1>
+<p>Welcome {{ username }}</p>
+<a href="/logout">Logout</a>
+<table>
+    <tr>
+        <th>Fridge ID</th>
+        <th>Fridge Model</th>
+        <th>Fridge Added</th>
+    </tr>
+    {%for fridge in fridges%}
+        <tr>
+            <td>{{fridge.fid}}</td>
+            <td>{{fridge.model}}</td>
+            <td>{{fridge.since}}</td>
+        </tr>
+    {%endfor%}
+</table>
+<p>Add Fridge</p>
+<form action="/dashboard" method="POST">
+    <label>Fridge Model</label>
+    <input type="text" name="model" />
+    <input type="submit" />
+</form>
+</body>
+</html>
