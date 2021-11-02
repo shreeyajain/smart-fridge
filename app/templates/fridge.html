@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Fridge Page</h1>
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Amount</th>
+        <th>Unit</th>
+        <th>Price</th>
+        <th>Store</th>
+        <th>Category</th>
+    </tr>
+    {%for row in data%}
+        <tr>
+            {%for col in row%}
+                <td>{{col}}</td>
+            {%endfor%}
+        </tr>
+    {%endfor%}
+</table>
+<a href={{"/shopping/{}".format(fid)}}>Create Shopping List</a>
+</body>
+</html>

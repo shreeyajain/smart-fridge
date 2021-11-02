@@ -2,6 +2,7 @@ from app import app, db, login_manager
 from flask_login import current_user, login_user, logout_user, login_required, UserMixin
 from flask import abort, request, render_template, redirect
 from app.models import Fridge, FridgeUser, Login, User
+from sqlalchemy import text
 
 def checkUserAuth(func):
     @wraps(func)
@@ -65,6 +66,28 @@ def register():
 
     else:
         return render_template('register.html')
+
+@app.route("/fridge/<int:fid>")
+@login_required
+def fridge(fid):
+    fridgeUser = Fridge.query.filter_by(fid=fid, uid=current_user.id).all()
+    if len(fridgeUser) == 0:
+        return redirect("/dashboard")
+    
+    query = text("SELECT content.name, stores.amount, stores.unit, stores.price, stores.store, category.name from stores, content, category where stores.conid = content.conid and stores.catid = category.catid and fid={} order by category.name".format(fid))
+    data = db.session.execute(query)
+    return render_template('fridge.html', data=data, fid=fid)
+
+@app.route("/shopping/<int:fid>")
+@login_required
+def shopping(fid):
+    fridgeUser = Fridge.query.filter_by(fid=fid, uid=current_user.id).all()
+    if len(fridgeUser) == 0:
+        return redirect("/dashboard")
+    
+    query = text("SELECT content.name, stores.amount, stores.unit, stores.price, stores.store, category.name from stores, content, category where stores.conid = content.conid and stores.catid = category.catid and fid={} order by category.name".format(fid))
+    data = db.session.execute(query)
+    return render_template('shopping.html', data=data, fid=fid)
 
 @app.route("/dashboard", methods=['GET', 'POST'])
 @login_required
