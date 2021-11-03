@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Add Page</h1>
+<form action={{"/add/{}".format(fid)}} method="post">
+    <p>Item Name</p>
+    <input type="text" name="name" />
+    <p>Amount</p>
+    <input type="text" name="amount" />
+    <p>Unit</p>
+    <input type="text" name="unit" />
+    <p>Price</p>
+    <input type="text" name="price" />
+    <p>Store</p>
+    <input type="text" name="store" />
+    <p>Category</p>
+    <select name="category" id="category" onchange="categoryChanged()">
+        {%for category in categories%}
+            <option value={{category.catid}}>{{category.name}}</option>
+        {%endfor%}
+        <option value="-1">Add New</option>
+    </select>
+    <input type="submit" name="submit" id="submit" />
+</form>
+</body>
+<script>
+    function categoryChanged() {
+        var choiceGroup = document.getElementById('category');
+        if (choiceGroup.value == -1) {
+            parent = choiceGroup.parentElement;
+            parent.removeChild(choiceGroup);
+            var inputElement = document.createElement('input');
+            inputElement.type = "text";
+            inputElement.name = "category";
+            parent.insertBefore(inputElement, document.getElementById("submit"));
+        }
+    }
+</script>
+</html>

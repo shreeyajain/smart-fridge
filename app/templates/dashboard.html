@@ -5,7 +5,7 @@
 <h1>Dashboard Page</h1>
 <p>Welcome {{ username }}</p>
 <a href="/logout">Logout</a>
-<table>
+<table border="1">
     <tr>
         <th>Fridge ID</th>
         <th>Fridge Model</th>
@@ -13,8 +13,8 @@
     </tr>
     {%for fridge in fridges%}
         <tr>
-            <td>{{fridge.fid}}</td>
-            <td>{{fridge.model}}</td>
+            <td><a href={{"/fridge/{}".format(fridge.fid)}}>{{fridge.fid}}</a></td>
+            <td><a href={{"/fridge/{}".format(fridge.fid)}}>{{fridge.model}}</a></td>
             <td>{{fridge.since}}</td>
         </tr>
     {%endfor%}

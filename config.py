@@ -9,3 +9,4 @@ BASIC_AUTH_USERNAME="shbharad"
 BASIC_AUTH_PASSWORD="thefireisnothot"
 SECRET_KEY="columbiauniversityinthecityofnewyork"
 REMEMBER_COOKIE_DURATION=timedelta(days=1)
+SQLALCHEMY_TRACK_MODIFICATIONS=False

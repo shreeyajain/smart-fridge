@@ -221,7 +221,7 @@ class Settings(Base):
         PrimaryKeyConstraint('locid', 'fid'),
     )
 
-    locid = Column(Integer, primary_key=True)
+    locid = Column(Integer)
     fid = Column(Integer, nullable=False)
     name = Column(VARCHAR(20))
     temp = Column(Integer, default=4)
