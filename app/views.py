@@ -1,22 +1,31 @@
 from app import app, db, login_manager
-from flask_login import current_user, login_user, logout_user, login_required, UserMixin
-from flask import abort, request, render_template, redirect
-from app.models import Fridge, FridgeUser, Login, User
-from sqlalchemy import text, update
+from flask_login import current_user, login_user, logout_user, login_required
+from flask import request, render_template, redirect
+from app.models import Fridge, FridgeUser, User
+from sqlalchemy import text
 
-def checkUserAuth(func):
-    @wraps(func)
-    def returnFunc(*args, **kwargs):
-        if not current_user.is_authenticated:
-            abort(405)
-
-        return func(*args, **kwargs)
-
-    return returnFunc
+def check_fridge_authorization(func):
+    def inner(fid):
+        fridgeUser = db.session.execute("SELECT * from fridge where uid={} and fid={}".format(current_user.id, fid)).all()
+        if len(fridgeUser) == 0:
+            return redirect("/dashboard")
+        return func(fid)
+    inner.__name__ = func.__name__
+    return inner
 
 @login_manager.user_loader
 def load_user(id):
     return FridgeUser.get(id)
+
+@app.route("/")
+def landing():
+    return render_template('landing.html')
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -36,16 +45,6 @@ def login():
     else:
         return render_template('login.html')
 
-@app.route("/")
-def landing():
-    return render_template('landing.html')
-
-@app.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    return redirect("/")
-
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -58,10 +57,9 @@ def register():
         loginid = request.form['loginid']
         password = request.form['password']
 
-        user = User(name=name, email=email, address=address, countrycode=country_code, phone=phone, budget=budget)
-        user.add(user)
-        login = Login(uid=user.uid, loginid=loginid, password=password)
-        login.add(login)
+        user = db.session.execute("INSERT INTO user(name,email,address,countrycode,phone,budget) VALUES ('{}', '{}', '{}', {}, {}, {}) RETURNING uid".format(name, email, address, country_code, phone, budget))
+        db.session.execute("INSERT INTO login(uid, loginid, password) VALUES ({}, '{}', '{}')".format(user.first(), loginid, password))
+        db.session.commit()
         return redirect("/login")
 
     else:
@@ -103,26 +101,33 @@ def profile():
     else:
         return render_template('profile.html', user=user)
 
-@app.route("/fridge/<int:fid>")
+@app.route("/fridge/<int:fid>", methods=['GET', 'POST'])
 @login_required
+@check_fridge_authorization
 def fridge(fid):
-    fridgeUser = Fridge.query.filter_by(fid=fid, uid=current_user.id).all()
+    fridgeUser = db.session.execute("SELECT * from fridge where uid={} and fid={}".format(current_user.id, fid)).all()
     if len(fridgeUser) == 0:
         return redirect("/dashboard")
     
-    nickFridge = Fridge.query.filter_by(fid=fid).first()
+    if request.method == 'POST':
+        for key in request.form:
+            locid = key
+            temp = request.form[key]
+            query = "UPDATE settings SET temp={} WHERE locid={} and fid={}".format(temp, locid, fid)
+            db.session.execute(query)
+            db.session.commit()
 
+    query = "SELECT locid, name, temp from settings where fid={}".format(fid)
+    settings = db.session.execute(query)
     query = text("SELECT stores.fid fid, stores.conid conid, stores.catid catid, content.name, stores.amount, stores.unit, stores.price, stores.store, category.name category from stores, content, category where stores.conid = content.conid and stores.catid = category.catid and fid={} order by category.name;".format(fid))
     data = db.session.execute(query)
-    return render_template('fridge.html', data=data, fid=fid, nickname=nickFridge.nickname)
+    nickFridge = Fridge.query.filter_by(fid=fid).first()
+    return render_template('fridge.html', data=data, settings=settings, fid=fid, nickname=nickFridge.nickname)
 
 @app.route("/shopping/<int:fid>")
 @login_required
+@check_fridge_authorization
 def shopping(fid):
-    fridgeUser = Fridge.query.filter_by(fid=fid, uid=current_user.id).all()
-    if len(fridgeUser) == 0:
-        return redirect("/dashboard")
-    
     query = text("SELECT content.name, stores.amount, stores.unit, stores.price, stores.store, category.name from stores, content, category where stores.conid = content.conid and stores.catid = category.catid and fid={} order by category.name;".format(fid))
     data = db.session.execute(query)
     return render_template('shopping.html', data=data, fid=fid)
@@ -155,11 +160,8 @@ def dashboard():
 
 @app.route("/add/<int:fid>", methods=['GET', 'POST'])
 @login_required
+@check_fridge_authorization
 def add(fid):
-    fridgeUser = Fridge.query.filter_by(fid=fid, uid=current_user.id).all()
-    if len(fridgeUser) == 0:
-        return redirect("/dashboard")
-
     if request.method == 'POST':
         name = request.form['name']
         amount = request.form['amount']
@@ -167,19 +169,17 @@ def add(fid):
         price = request.form['price']
         store = request.form['store']
         catid = request.form['category']
-
+        expiry = request.form['expiry']
         if not catid.isnumeric():
             result = db.session.execute("INSERT INTO category(name) VALUES ('{}') RETURNING catid".format(catid))
-            db.session.commit()
             catid = result.first()
 
         conid = db.session.execute("SELECT conid from content where LOWER(name)=LOWER('{}')".format(name)).first()
         if not conid:
             result = db.session.execute("INSERT INTO content(name, catid) VALUES ('{}', {}) RETURNING conid".format(name, catid))
-            db.session.commit()
             conid = result.first()
-
-        db.session.execute("INSERT INTO stores(fid, conid, catid, amount, unit, price, store) VALUES ({},{},{},{},'{}',{}, '{}');".format(fid, conid[0], catid, amount, unit, price, store))
+        
+        db.session.execute("INSERT INTO stores(fid, conid, catid, amount, unit, price, store, expiry) VALUES ({},{},{},{},'{}',{}, '{}', DATE('{}'));".format(fid, conid[0], catid, amount, unit, price, store, expiry))
         db.session.commit()
         return redirect("/fridge/{}".format(fid))
 
@@ -196,16 +196,14 @@ def edit():
     if fid == None or catid == None or conid == None:
         return redirect("/dashboard")
     
-    fridgeUser = Fridge.query.filter_by(fid=fid, uid=current_user.id).all()
+    fridgeUser = db.session.execute("SELECT * from fridge where uid={} and fid={}".format(current_user.id, fid)).all()
     if len(fridgeUser) == 0:
         return redirect("/dashboard")
     
     if request.method == 'POST':
         amount = request.form['amount']
-        price = request.form['price']
-        unit = request.form['unit']
 
-        query = text("UPDATE stores SET amount={}, price={}, unit='{}' where fid={} and conid={} and catid={};".format(amount, price, unit, fid, conid, catid))
+        query = text("UPDATE stores SET amount={} where fid={} and conid={} and catid={};".format(amount, fid, conid, catid))
         print(query)
         db.session.execute(query)
         db.session.commit()
@@ -223,7 +221,8 @@ def delete():
     catid = request.args.get('catid', None)
     if fid == None or catid == None or conid == None:
         return redirect("/dashboard")
-    fridgeUser = Fridge.query.filter_by(fid=fid, uid=current_user.id).all()
+    
+    fridgeUser = db.session.execute("SELECT * from fridge where uid={} and fid={}".format(current_user.id, fid)).all()
     if len(fridgeUser) == 0:
         return redirect("/dashboard")
 

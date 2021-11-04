@@ -14,4 +14,5 @@ login_manager.init_app(app)
 login_manager.login_view = "/login"
 login_manager.session_protection = "strong"
 
+from app import models
 from app import views

@@ -4,7 +4,8 @@
 
 <h1>Dashboard Page</h1>
 <p>Welcome {{ username }}</p>
-<a href="/logout">Logout</a>
+<p><a href="/profile">Edit Profile</a> | <a href="/logout">Logout</a></p>
+<p style="color: red;">{{error}}</p>
 <table border="1">
     <tr>
         <th>Fridge</th>
@@ -61,7 +62,5 @@
     <input type="text" name="nickname" />
     <input type="submit" value="Add" />
 </form>
-<p><a href="/profile">Edit Profile</a></p>
-<p><a href="/logout">Logout</a></p>
 </body>
 </html>

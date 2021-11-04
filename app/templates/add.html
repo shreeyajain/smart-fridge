@@ -2,6 +2,8 @@
 <html>
 <body>
 <h1>Add Page</h1>
+<p style="color: red;">{{error}}</p>
+<p><a href={{"/fridge/{}".format(fid)}}>Back</a> | <a href="/dashboard">Dashboard</a></p>
 <form action={{"/add/{}".format(fid)}} method="post">
     <p>Item Name</p>
     <input type="text" name="name" />
@@ -20,10 +22,28 @@
         {%endfor%}
         <option value="-1">Add New</option>
     </select>
+    <p>Expiry</p>
+    <input id="expiry" type="date" name="expiry" />
     <input type="submit" name="submit" id="submit" />
 </form>
 </body>
 <script>
+    var date = document.getElementById("expiry");
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1; //January is 0!
+    var yyyy = today.getFullYear();
+
+    if (dd < 10) {
+    dd = '0' + dd;
+    }
+
+    if (mm < 10) {
+    mm = '0' + mm;
+    } 
+        
+    today = yyyy + '-' + mm + '-' + dd;
+    date.setAttribute("min", today);
     function categoryChanged() {
         var choiceGroup = document.getElementById('category');
         if (choiceGroup.value == -1) {

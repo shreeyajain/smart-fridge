@@ -2,12 +2,13 @@
 <html>
 <body>
 <h1>Edit Content Page</h1>
+<p><a href={{"/fridge/{}".format(fid)}}>Back</a> | <a href="/dashboard">Dashboard</a></p>
+<p style="color: red;">{{error}}</p>
 <form action={{"/edit?fid={}&conid={}&catid={}".format(fid, conid, catid)}} method="post">
     <p>Name: {{item.name}}</p>
     <p>Category: {{item.category}}</p>
-    <input type="text" name="amount" value={{item.amount}} />
-    <input type="text" name="unit" value={{item.unit}} />
-    <input type="text" name="price" value={{item.price}} />
+    <p>Price: {{item.price}}</p>
+    <input type="number" name="amount" value={{item.amount}} max={{item.amount}} min="0"/>{{item.unit}}
     <input type="submit" />
 </form>
 </body>

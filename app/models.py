@@ -7,7 +7,6 @@ from sqlalchemy.sql.sqltypes import VARCHAR, TIMESTAMP, Integer
 import inspect
 from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
-import psutil
 
 class MyAdminIndexView(AdminIndexView):
 	def is_accessible(self):
@@ -241,7 +240,7 @@ class Log(Base):
     fid = Column(Integer, nullable=False)
     time = Column(TIMESTAMP, default=db.func.current_timestamp())
     message = Column(VARCHAR)
-    ForeignKeyConstraint(['fid'], ['fridge.fid'])
+    ForeignKeyConstraint(['fid'], ['fridge.fid'])        
 
 class LogAdmin(ModelView):
     column_display_pk = True
