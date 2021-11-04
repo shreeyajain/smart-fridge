@@ -20,8 +20,7 @@
             <td>{{row.price}}</td>
             <td>{{row.store}}</td>
             <td>{{row.category}}</td>
-            <td><a href={{"/edit?fid={}&conid={}&catid={}".format(row.fid, row.conid, row.catid)}}>Edit</a> 
-                <a href={{"/delete?fid={}&conid={}&catid={}".format(row.fid, row.conid, row.catid)}}>Delete</a></td>
+            <td><a href={{"/edit?fid={}&conid={}&catid={}".format(row.fid, row.conid, row.catid)}}>Edit</a> <a href={{"/delete?fid={}&conid={}&catid={}".format(row.fid, row.conid, row.catid)}}>Delete</a></td>
         </tr>
     {%endfor%}
 </table>

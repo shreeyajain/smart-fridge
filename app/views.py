@@ -123,7 +123,7 @@ def shopping(fid):
     if len(fridgeUser) == 0:
         return redirect("/dashboard")
     
-    query = text("SELECT content.name, stores.amount, stores.unit, stores.price, stores.store, category.name from stores, content, category where stores.conid = content.conid and stores.catid = category.catid and fid={} order by category.name".format(fid))
+    query = text("SELECT content.name, stores.amount, stores.unit, stores.price, stores.store, category.name from stores, content, category where stores.conid = content.conid and stores.catid = category.catid and fid={} order by category.name;".format(fid))
     data = db.session.execute(query)
     return render_template('shopping.html', data=data, fid=fid)
 
@@ -192,14 +192,14 @@ def edit():
     fid = request.args.get('fid', default = None)
     conid = request.args.get('conid', default = None)
     catid = request.args.get('catid', default = None)
-
+    
     if fid == None or catid == None or conid == None:
         return redirect("/dashboard")
-
+    
     fridgeUser = Fridge.query.filter_by(fid=fid, uid=current_user.id).all()
     if len(fridgeUser) == 0:
         return redirect("/dashboard")
-
+    
     if request.method == 'POST':
         amount = request.form['amount']
         price = request.form['price']
@@ -223,7 +223,6 @@ def delete():
     catid = request.args.get('catid', None)
     if fid == None or catid == None or conid == None:
         return redirect("/dashboard")
-
     fridgeUser = Fridge.query.filter_by(fid=fid, uid=current_user.id).all()
     if len(fridgeUser) == 0:
         return redirect("/dashboard")
@@ -231,4 +230,4 @@ def delete():
     query = text("DELETE from stores where fid={} and conid={} and catid={};".format(fid, conid, catid))
     db.session.execute(query)
     db.session.commit()
-    return redirect("/fridge/{}".format(fid)) 
+    return redirect("/fridge/{}".format(fid))
