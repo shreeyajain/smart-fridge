@@ -24,24 +24,24 @@ INSERT INTO login VALUES
 (10, 'brunnerem', 'EmiliaNoon%5633'),
 (11, 'gardiego', '15%KeepSand%29');
 
-INSERT INTO fridge(model,uid) VALUES 
-	('FRIDG60000', 1),
-('FRIDG60000', 2), 
-('FRIDG70000', 2), 
-('FRIDG70000', 3), 
-('FRIDG40000', 4), 
-('FRIDG60000', 5), 
-('FRIDG50000', 6), 
-('FRIDG50000', 7), 
-('FRIDG40000', 8), 
-('FRIDG50000', 9), 
-('FRIDG40000', 10), 
-('FRIDG40000', 11), 
-('FRIDG80000', 8), 
-('FRIDG80000', 7), 
-('FRIDG50000', 4), 
-('FRIDG90000', 11), 
-('FRIDG90000', 6);
+INSERT INTO fridge(model, nickname, uid) VALUES 
+	('FRIDG60000', 'Kitchen Fridge',1),
+('FRIDG60000', 'Kitchen Fridge', 2), 
+('FRIDG70000', 'Pantry Fridge', 2), 
+('FRIDG70000', 'Kitchen Fridge', 3), 
+('FRIDG40000', 'Kitchen Fridge', 4), 
+('FRIDG60000', 'Kitchen Fridge', 5), 
+('FRIDG50000', 'Kitchen Fridge', 6), 
+('FRIDG50000', 'Kitchen Fridge', 7), 
+('FRIDG40000', 'Kitchen Fridge', 8), 
+('FRIDG50000', 'Kitchen Fridge', 9), 
+('FRIDG40000', 'Kitchen Fridge', 10), 
+('FRIDG40000', 'Kitchen Fridge', 11), 
+('FRIDG80000', 'Pantry Fridge', 8), 
+('FRIDG80000', 'Pantry Fridge', 7), 
+('FRIDG50000', 'Pantry Fridge', 4), 
+('FRIDG90000', 'Pantry Fridge', 11), 
+('FRIDG90000', 'Pantry Fridge', 6);
 
 INSERT INTO category(name) VALUES ('Dairy'), ('Eggs, Meat & Fish'), ('Fruits'), ('Vegetables'), ('Nuts & Seeds'), ('Bread & Bakery'), ('Frozen Foods'), ('Beverages'), ('Alcohol'), ('Condiments');
 

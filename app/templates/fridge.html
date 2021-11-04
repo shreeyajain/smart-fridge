@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
 <body>
-<h1>Fridge Page</h1>
+<h1>Fridge Page - {{nickname}}</h1>
+<p><a href={{"/add/{}".format(fid)}}>Add Item</a></p>
 <table border="1">
     <tr>
-        <th>Name</th>
+        <th>Content</th>
         <th>Amount</th>
         <th>Unit</th>
         <th>Price</th>
@@ -13,12 +14,18 @@
     </tr>
     {%for row in data%}
         <tr>
-            {%for col in row%}
-                <td>{{col}}</td>
-            {%endfor%}
+            <td>{{row.name}}</td>
+            <td>{{row.amount}}</td>
+            <td>{{row.unit}}</td>
+            <td>{{row.price}}</td>
+            <td>{{row.store}}</td>
+            <td>{{row.category}}</td>
+            <td><a href={{"/edit?fid={}&conid={}&catid={}".format(row.fid, row.conid, row.catid)}}>Edit</a> 
+                <a href={{"/delete?fid={}&conid={}&catid={}".format(row.fid, row.conid, row.catid)}}>Delete</a></td>
         </tr>
     {%endfor%}
 </table>
-<a href={{"/shopping/{}".format(fid)}}>Create Shopping List</a>
+<p><a href={{"/shopping/{}".format(fid)}}>Create Shopping List</a></p>
+<p><a href="/dashboard">Back to Dashboard</a></p>
 </body>
 </html>

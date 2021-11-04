@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Edit Content Page</h1>
+<form action={{"/edit?fid={}&conid={}&catid={}".format(fid, conid, catid)}} method="post">
+    <p>Name: {{item.name}}</p>
+    <p>Category: {{item.category}}</p>
+    <input type="text" name="amount" value={{item.amount}} />
+    <input type="text" name="unit" value={{item.unit}} />
+    <input type="text" name="price" value={{item.price}} />
+    <input type="submit" />
+</form>
+</body>
+</html>
