@@ -6,7 +6,12 @@
 <p><a href={{"/fridge/{}".format(fid)}}>Back</a> | <a href="/dashboard">Dashboard</a></p>
 <form action={{"/add/{}".format(fid)}} method="post">
     <p>Item Name</p>
-    <input type="text" name="name" />
+    <select name="content" id="content" onchange="contentChanged()">
+        {%for content in contents%}
+            <option value={{content.conid}}>{{content.content}}</option>
+        {%endfor%}
+        <option value="-1">Add New</option>
+    </select>
     <p>Amount</p>
     <input type="text" name="amount" />
     <p>Unit</p>
@@ -15,13 +20,6 @@
     <input type="text" name="price" />
     <p>Store</p>
     <input type="text" name="store" />
-    <p>Category</p>
-    <select name="category" id="category" onchange="categoryChanged()">
-        {%for category in categories%}
-            <option value={{category.catid}}>{{category.name}}</option>
-        {%endfor%}
-        <option value="-1">Add New</option>
-    </select>
     <p>Expiry</p>
     <input id="expiry" type="date" name="expiry" />
     <input type="submit" name="submit" id="submit" />
@@ -44,16 +42,20 @@
         
     today = yyyy + '-' + mm + '-' + dd;
     date.setAttribute("min", today);
-    function categoryChanged() {
-        var choiceGroup = document.getElementById('category');
+
+    function contentChanged() {
+        var choiceGroup = document.getElementById('content');
         if (choiceGroup.value == -1) {
+            var htmlString = '<input type="text" name="content" /><p>Category</p><input type="text" name="category" />'
+            var htmlObject = document.createElement('div');
+            htmlObject.innerHTML = htmlString;
+            
             parent = choiceGroup.parentElement;
             parent.removeChild(choiceGroup);
-            var inputElement = document.createElement('input');
-            inputElement.type = "text";
-            inputElement.name = "category";
-            parent.insertBefore(inputElement, document.getElementById("submit"));
+    
+            parent.insertBefore(htmlObject, parent.childNodes[2]);
         }
+        var choiceGroupCat = document.getElementById('category');
     }
 </script>
 </html>
