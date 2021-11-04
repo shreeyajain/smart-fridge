@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html>
 <body>
-<h1>Fridge Page</h1>
-<p><a href="/dashboard">Dashboard</a></p>
+<h1>Fridge Page - {{nickname}}</h1>
 <p><a href={{"/add/{}".format(fid)}}>Add Item</a></p>
 <table border="1">
     <tr>
-        <th>Name</th>
+        <th>Content</th>
         <th>Amount</th>
         <th>Unit</th>
         <th>Price</th>
@@ -25,6 +24,7 @@
         </tr>
     {%endfor%}
 </table>
-<a href={{"/shopping/{}".format(fid)}}>Create Shopping List</a>
+<p><a href={{"/shopping/{}".format(fid)}}>Create Shopping List</a></p>
+<p><a href="/dashboard">Back to Dashboard</a></p>
 </body>
 </html>

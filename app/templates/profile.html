@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Edit Profile Page</h1>
+<form action="/profile" method="post">
+    <p>Name</p>
+    <input type="text" name="name" placeholder="{{user.name}}" size="47"/>
+    <p>Email</p>
+    <input type="text" name="email" placeholder="{{user.email}}" size = "47"/>
+    <p>Address</p>
+    <textarea name="address" placeholder="{{user.address}}" rows="3" cols="40"></textarea>
+    <p>Country Code</p>
+    <input type="text" name="country_code" placeholder="{{user.countrycode}}" size="4"/>
+    <p>Phone</p>
+    <input type="text" name="phone" placeholder="{{user.phone}}" size="12"/>
+    <p>Budget</p>
+    <input type="number" name="budget" placeholder="{{user.budget}}" />
+    <input type="submit" value="Update" />
+</form>
+</body>
+</html>

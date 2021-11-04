@@ -111,11 +111,12 @@ class Fridge(Base):
     fid = Column(Integer, primary_key=True, autoincrement=True)
     model = Column(VARCHAR(10))
     since = Column(TIMESTAMP, server_default=db.func.current_timestamp())
+    nickname = Column(VARCHAR(25))
     uid = Column(Integer, nullable=False)
     ForeignKeyConstraint(['uid'], ['user.uid'])
 
     @instanceVariables
-    def __init__(self, uid, model):
+    def __init__(self, uid, model, nickname):
         pass
 
     def __repr__(self):
@@ -123,7 +124,7 @@ class Fridge(Base):
 
 class FridgeAdmin(ModelView):
     column_display_pk = True
-    form_columns = ['fid', 'model', 'since', 'uid']
+    form_columns = ['fid', 'model', 'since', 'nickname', 'uid']
 
 class FridgeUser(UserMixin):
     def __init__(self, id, name, password, email):
@@ -227,6 +228,10 @@ class Settings(Base):
     temp = Column(Integer, default=4)
     ForeignKeyConstraint(['fid'], ['fridge.fid'])
 
+    @instanceVariables
+    def __init__(self, fid, locid, name):
+        pass
+
 class SettingsAdmin(ModelView):
     column_display_pk = True
     form_columns = ['locid', 'fid', 'name', 'temp']
@@ -247,6 +252,7 @@ admin.add_view(LoginAdmin(Login, db.session))
 admin.add_view(FridgeAdmin(Fridge, db.session))
 admin.add_view(CategoryAdmin(Category, db.session))
 admin.add_view(ContentAdmin(Content, db.session))
+admin.add_view(StoresAdmin(Stores, db.session))
 admin.add_view(CreateSListAdmin(CreateSList, db.session))
 admin.add_view(SettingsAdmin(Settings, db.session))
 admin.add_view(LogAdmin(Log, db.session))

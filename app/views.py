@@ -2,7 +2,7 @@ from app import app, db, login_manager
 from flask_login import current_user, login_user, logout_user, login_required, UserMixin
 from flask import abort, request, render_template, redirect
 from app.models import Fridge, FridgeUser, Login, User
-from sqlalchemy import text
+from sqlalchemy import text, update
 
 def checkUserAuth(func):
     @wraps(func)
@@ -67,6 +67,42 @@ def register():
     else:
         return render_template('register.html')
 
+@app.route("/profile", methods=['GET', 'POST'])
+@login_required
+def profile():
+    user = User.query.filter_by(uid=current_user.id).first()
+    if request.method == 'POST':
+        name = request.form['name']
+        if name == "":
+            name = user.name
+            print(name)
+        email = request.form['email']
+        if email == "":
+            email = user.email
+        address = request.form['address']
+        if address == "":
+            address = user.address
+        country_code = request.form['country_code']
+        if country_code == "":
+            country_code = user.countrycode
+        phone = request.form['phone']
+        if phone == "":
+            phone = user.phone
+        budget = request.form['budget']
+        if budget == "":
+            budget = user.budget
+        
+        update_query = text("update user set name = '{}', email = '{}', address = '{}', countrycode = {}, \
+                            phone = {}, budget = {} where uid = {}".format(name, email, address, country_code,
+                            phone, budget, current_user.id))
+        db.session.execute(update_query)
+        db.session.commit()
+
+        return redirect("/dashboard")
+
+    else:
+        return render_template('profile.html', user=user)
+
 @app.route("/fridge/<int:fid>")
 @login_required
 def fridge(fid):
@@ -74,9 +110,11 @@ def fridge(fid):
     if len(fridgeUser) == 0:
         return redirect("/dashboard")
     
+    nickFridge = Fridge.query.filter_by(fid=fid).first()
+
     query = text("SELECT stores.fid fid, stores.conid conid, stores.catid catid, content.name, stores.amount, stores.unit, stores.price, stores.store, category.name category from stores, content, category where stores.conid = content.conid and stores.catid = category.catid and fid={} order by category.name;".format(fid))
     data = db.session.execute(query)
-    return render_template('fridge.html', data=data, fid=fid)
+    return render_template('fridge.html', data=data, fid=fid, nickname=nickFridge.nickname)
 
 @app.route("/shopping/<int:fid>")
 @login_required
@@ -95,10 +133,25 @@ def dashboard():
     if request.method == 'POST':
         uid = current_user.id
         model = request.form['model']
-        fridge = Fridge(uid=uid, model=model)
+        nickname = request.form['nickname']
+        fridge = Fridge(uid=uid, model=model, nickname=nickname)
         fridge.add(fridge)
-    fridges = Fridge.query.filter_by(uid=current_user.id)
-    return render_template('dashboard.html', username=current_user.name, fridges=fridges)
+    fridges = Fridge.query.filter_by(uid=current_user.id)  
+
+    total_spending_query = text("select round(sum(price), 2) from stores where fid in (select fid from fridge where uid={})".format(current_user.id))
+    total_spending = db.session.execute(total_spending_query)
+
+    spending_query = text("select stores.fid as fid, fridge.nickname as nick, round(sum(price), 2) as sum from stores join fridge on stores.fid=fridge.fid where uid={} group by stores.fid, fridge.nickname".format(current_user.id))
+    spending = db.session.execute(spending_query)
+
+    spending_cat_query = text("select category.name as cat, round(sum(price), 2) as sum from category left outer join stores on stores.catid=category.catid where fid in (select fid from fridge where uid={}) group by category.name".format(current_user.id))
+    spending_cat = db.session.execute(spending_cat_query)
+
+    not_spent_cat_query = text("select name from category where name not in (select category.name from category left outer join stores on stores.catid=category.catid where fid in (select fid from fridge where uid={}))".format(current_user.id))
+    not_spent_cat = db.session.execute(not_spent_cat_query)
+    
+    return render_template('dashboard.html', username=current_user.name, fridges=fridges, total_spending=total_spending, 
+                            spending=spending, spending_cat=spending_cat, not_spent=not_spent_cat)
 
 @app.route("/add/<int:fid>", methods=['GET', 'POST'])
 @login_required
@@ -106,7 +159,7 @@ def add(fid):
     fridgeUser = Fridge.query.filter_by(fid=fid, uid=current_user.id).all()
     if len(fridgeUser) == 0:
         return redirect("/dashboard")
-    
+
     if request.method == 'POST':
         name = request.form['name']
         amount = request.form['amount']
@@ -119,13 +172,13 @@ def add(fid):
             result = db.session.execute("INSERT INTO category(name) VALUES ('{}') RETURNING catid".format(catid))
             db.session.commit()
             catid = result.first()
-        
+
         conid = db.session.execute("SELECT conid from content where LOWER(name)=LOWER('{}')".format(name)).first()
         if not conid:
             result = db.session.execute("INSERT INTO content(name, catid) VALUES ('{}', {}) RETURNING conid".format(name, catid))
             db.session.commit()
             conid = result.first()
-        
+
         db.session.execute("INSERT INTO stores(fid, conid, catid, amount, unit, price, store) VALUES ({},{},{},{},'{}',{}, '{}');".format(fid, conid[0], catid, amount, unit, price, store))
         db.session.commit()
         return redirect("/fridge/{}".format(fid))
@@ -170,7 +223,6 @@ def delete():
     catid = request.args.get('catid', None)
     if fid == None or catid == None or conid == None:
         return redirect("/dashboard")
-    
     fridgeUser = Fridge.query.filter_by(fid=fid, uid=current_user.id).all()
     if len(fridgeUser) == 0:
         return redirect("/dashboard")
