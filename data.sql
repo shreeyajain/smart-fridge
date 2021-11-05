@@ -294,7 +294,7 @@ INSERT INTO stores(fid, conid, catid, amount, unit, price, store, expiry) VALUES
 (16, 53, 5, 1, 'kg', 5.59, 'H Mart', date('now'));
 
 
-INSERT INTO CreateSList(fid, conid, catid) VALUES 
+INSERT INTO create_s_list(fid, conid, catid) VALUES 
 (10, 74, 8), 
 (12, 5, 2), 
 (13, 15, 2), 
@@ -324,15 +324,15 @@ INSERT INTO settings(locid, fid, name, temp) VALUES
 (6, 9, 'middle shelf', 2), 
 (7, 9, 'bottom shelf', 3);
 
-INSERT INTO log(fid, message) VALUES 
-(1, '948 oz Milk added'),
-(1, '245 oz Yogurt added'),
-(1, '1 unit Pineapple added'),
-(4, '1 kg Blackberry added'),
-(4, '2 kg Spinach added'),
-(6, '1 kg Apple added'),
-(8, '500 gm Almond added'),
-(9, '0.5 kg Romaine Lettuce added'),
-(13, '500 gm Ice Cream added'),
-(15, '1 unit Frozen Mozzarella Stick added'),
-(16, '500 ml Red Wine added');
+INSERT INTO log(uid, fid, message) VALUES 
+(1, 1, '948 oz Milk added'),
+(1, 1, '245 oz Yogurt added'),
+(1, 1, '1 unit Pineapple added'),
+(1, 4, '1 kg Blackberry added'),
+(1, 4, '2 kg Spinach added'),
+(1, 6, '1 kg Apple added'),
+(1, 8, '500 gm Almond added'),
+(1, 9, '0.5 kg Romaine Lettuce added'),
+(1, 3, '500 gm Ice Cream added'),
+(1, 5, '1 unit Frozen Mozzarella Stick added'),
+(1, 6, '500 ml Red Wine added');

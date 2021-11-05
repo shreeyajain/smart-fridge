@@ -33,9 +33,10 @@ def login():
         try:
             username = request.form['username']
             password = request.form['password']
+            print(username, password)
             if not current_user.is_authenticated:
                 user = FridgeUser.get(loginid=username)
-                
+                print(user)
                 if user and password == user.password:
                     login_user(user, remember=True)
                 else:
@@ -209,7 +210,7 @@ def add(fid):
         print(e)
         error = 'Server encountered an error. Please try again later.'
 
-    contents = db.session.execute("SELECT content.name content, content.conid, content.catid, category.name as category from content, category where category.catid=content.catid order by content.name;")
+    contents = db.session.execute("SELECT content.name as content, content.conid, content.catid, category.name as category from content, category where category.catid=content.catid order by content.name;")
     return render_template('add.html', contents=contents, fid=fid, error=error)
 
 @app.route("/edit", methods=['GET', 'POST'])

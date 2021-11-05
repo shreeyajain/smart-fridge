@@ -57,7 +57,7 @@ class Base(db.Model, CRUD):
 
 class Users(Base):
     __table_args__ = (
-        CheckConstraint('email LIKE "%_@__%.__%"'),
+        CheckConstraint("email LIKE '%_@__%.__%'"),
         CheckConstraint('budget >= 0')
     )
 
@@ -82,7 +82,7 @@ class UserAdmin(ModelView):
 
 class Login(Base):
     __table_args__ = (
-        #CheckConstraint('password ~ "^.*(?=.{8,255})(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).*$"'),
+        CheckConstraint("password ~ '^.*(?=.{8,255})(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).*$'"),
         PrimaryKeyConstraint('uid', 'loginid', name='Login_PK'),
     )
 
@@ -103,9 +103,9 @@ class LoginAdmin(ModelView):
     form_columns = ['uid', 'loginid', 'password']
 
 class Fridge(Base):
-    # __table_args__ = (
-    #     CheckConstraint('model ~ "^[a-zA-Z]{5}[0-9]{5}$"'),
-    # )
+    __table_args__ = (
+        CheckConstraint("model ~ '^[a-zA-Z]{5}[0-9]{5}$'"),
+    )
 
     fid = Column(Integer, primary_key=True, autoincrement=True)
     model = Column(VARCHAR(10))
@@ -175,7 +175,7 @@ class ContentAdmin(ModelView):
 class Stores(Base):
     __table_args__ = (
         CheckConstraint('amount > 0'),
-        CheckConstraint('unit in ("unit", "kg", "g", "mg", "l", "ml", "oz")'),
+        CheckConstraint("unit in ('unit', 'kg', 'g', 'mg', 'l', 'ml', 'oz')"),
         CheckConstraint('price > 0'),
         PrimaryKeyConstraint('fid', 'conid', 'catid'),
     )
