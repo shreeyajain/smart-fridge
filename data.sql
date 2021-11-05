@@ -1,4 +1,4 @@
-INSERT INTO user(name, email, address, countrycode, phone, budget) VALUES
+INSERT INTO users(name, email, address, countrycode, phone, budget) VALUES
 ('Shivang Bharadwaj', 'shivang.b@columbia.edu', 'Lexington and Broadway 24, New York, NY, 10025', 1, 7186121279, 400),
 ('Shreeya Jain', 'shreeya.jain@columbia.edu', '235 W 109th St, New York, NY, 10025', 1, 9175821990, 500),
 ('Mukta Jain', 'mukta7jain@gmail.com', 'DH 196, Vijay Nagar, India, 452010', 91, 9926034190, 1000),

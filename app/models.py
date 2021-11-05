@@ -55,7 +55,7 @@ class CRUD():
 class Base(db.Model, CRUD):
     __abstract__ = True
 
-class User(Base):
+class Users(Base):
     __table_args__ = (
         CheckConstraint('email LIKE "%_@__%.__%"'),
         CheckConstraint('budget >= 0')
@@ -89,7 +89,7 @@ class Login(Base):
     uid = Column(Integer, unique=True, nullable=False)
     loginid = Column(VARCHAR(50), unique=True, nullable=False)
     password = Column(VARCHAR(50), nullable= False)
-    ForeignKeyConstraint(['uid'], ['user.uid'])
+    ForeignKeyConstraint(['uid'], ['users.uid'])
 
     @instanceVariables
     def __init__(self, uid, loginid, password):
@@ -112,7 +112,7 @@ class Fridge(Base):
     since = Column(TIMESTAMP, server_default=db.func.current_timestamp())
     nickname = Column(VARCHAR(25))
     uid = Column(Integer, nullable=False)
-    ForeignKeyConstraint(['uid'], ['user.uid'])
+    ForeignKeyConstraint(['uid'], ['users.uid'])
 
     @instanceVariables
     def __init__(self, uid, model, nickname):
@@ -142,7 +142,7 @@ class FridgeUser(UserMixin):
             login = Login.query.filter_by(uid=uid).first()
 
         if login:
-            user = User.query.filter_by(uid = login.uid).first()
+            user = Users.query.filter_by(uid = login.uid).first()
 
         if user and login:
             return FridgeUser(user.uid, user.name, login.password, user.email)
@@ -246,7 +246,7 @@ class LogAdmin(ModelView):
     column_display_pk = True
     form_columns = ['uid', 'fid', 'time', 'message']
 
-admin.add_view(UserAdmin(User, db.session))
+admin.add_view(UserAdmin(Users, db.session))
 admin.add_view(LoginAdmin(Login, db.session))
 admin.add_view(FridgeAdmin(Fridge, db.session))
 admin.add_view(CategoryAdmin(Category, db.session))

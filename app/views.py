@@ -63,7 +63,7 @@ def register():
             loginid = request.form['loginid']
             password = request.form['password']
 
-            user = db.session.execute("INSERT INTO user(name,email,address,countrycode,phone,budget) VALUES ('{}', '{}', '{}', {}, {}, {}) RETURNING uid".format(name, email, address, country_code, phone, budget))
+            user = db.session.execute("INSERT INTO users(name,email,address,countrycode,phone,budget) VALUES ('{}', '{}', '{}', {}, {}, {}) RETURNING uid".format(name, email, address, country_code, phone, budget))
             db.session.execute("INSERT INTO login(uid, loginid, password) VALUES ({}, '{}', '{}')".format(user.first()[0], loginid, password))
             db.session.commit()
             return redirect("/login")
@@ -78,7 +78,7 @@ def register():
 @app.route("/profile", methods=['GET', 'POST'])
 @login_required
 def profile():
-    user = db.session.execute("SELECT * FROM user WHERE uid={}".format(current_user.id)).first()
+    user = db.session.execute("SELECT * FROM users WHERE uid={}".format(current_user.id)).first()
     try:
         if request.method == 'POST':
             name = request.form['name']
@@ -100,7 +100,7 @@ def profile():
             if budget == "":
                 budget = user.budget
             
-            update_query = text("update user set name = '{}', email = '{}', address = '{}', countrycode = {}, \
+            update_query = text("update users set name = '{}', email = '{}', address = '{}', countrycode = {}, \
                                 phone = {}, budget = {} where uid = {}".format(name, email, address, country_code,
                                 phone, budget, current_user.id))
             db.session.execute(update_query)
