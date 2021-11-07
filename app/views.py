@@ -145,7 +145,28 @@ def fridge(fid):
 @login_required
 @check_fridge_authorization
 def shopping(fid):
-    query = text("SELECT content.name, stores.amount, stores.unit, stores.price, stores.store, category.name from stores, content, category where stores.conid = content.conid and stores.catid = category.catid and fid={} order by category.name;".format(fid))
+    try:
+        query = text("DELETE from create_s_list where fid={}".format(fid))
+        db.session.execute(query)
+
+        query = text("SELECT content.conid, fid, category.catid, stores.expiry from stores, content, category where stores.conid = content.conid and stores.catid = category.catid and fid={} and julianday(datetime(stores.expiry))-julianday(datetime('now')) <= 14;".format(fid))
+        data = db.session.execute(query).all()
+
+        if len(data) != 0:
+            query = "INSERT INTO create_s_list(fid, conid, catid) VALUES "
+            for row in data:
+                query += "({},{},{}),".format(row.fid, row.conid, row.catid)
+
+            query = query[:-1] + ";"
+            db.session.execute(query)
+            db.session.commit()
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+        error = 'An error occurred on the server. Please try again later'
+        return render_template('shopping.html', data=[], fid=fid, error=error)
+    
+    query = text("SELECT content.name, stores.amount, stores.unit, stores.price, stores.store, category.name category, stores.expiry from stores, content, category where stores.conid = content.conid and stores.catid = category.catid and julianday(datetime(stores.expiry))-julianday(datetime('now')) <= 14 and fid={} order by category.name;".format(fid))
     data = db.session.execute(query)
     return render_template('shopping.html', data=data, fid=fid)
 
