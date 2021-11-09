@@ -236,7 +236,7 @@ class SettingsAdmin(ModelView):
     form_columns = ['locid', 'fid', 'name', 'temp']
 
 class Log(Base):
-    uid = Column(Integer, unique=True, primary_key=True)
+    lid = Column(Integer, primary_key=True, autoincrement=True)
     fid = Column(Integer, nullable=False)
     time = Column(TIMESTAMP, default=db.func.current_timestamp())
     message = Column(VARCHAR)
@@ -244,7 +244,7 @@ class Log(Base):
 
 class LogAdmin(ModelView):
     column_display_pk = True
-    form_columns = ['uid', 'fid', 'time', 'message']
+    form_columns = ['lid', 'fid', 'time', 'message']
 
 admin.add_view(UserAdmin(Users, db.session))
 admin.add_view(LoginAdmin(Login, db.session))
