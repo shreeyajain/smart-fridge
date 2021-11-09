@@ -70,5 +70,5 @@ other hand, when the user adds a new content, the application runs an insert que
 
 ### Shopping Page:
 The Shopping List page provides the user with a shopping list -- a new shopping list is created every time the user is directed to this page. The shopping list
-is obtained by a select query on the join of the stores, content, and category tables for contents expiring in the next 2 weeks. This provides the user essential
-information about soon-to-expire items in the fridge.
+is obtained by a select query on the join of the stores, content, and category tables for contents that have expired or are expiring in the next 2 weeks. 
+This provides the user essential information about expired or soon-to-expire items in the fridge.
