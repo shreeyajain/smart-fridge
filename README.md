@@ -4,10 +4,6 @@
 Shreeya Jain: sj3131 <br>
 Shivang Bharadwaj: sb4539
 
-## Access Information 
-UNI used to access the database: sb4539 <br>
-URL of web application: http://35.231.48.22:5000/
-
 ## Setup Instructions (edit)
 1. Install all dependencies
 2. Create sqlite database:
